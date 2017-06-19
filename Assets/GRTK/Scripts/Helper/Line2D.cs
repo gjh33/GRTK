@@ -116,5 +116,22 @@ namespace GRTK
 
             return onLine1 && onLine2;
         }
+
+        // Check if a point is to the left of the line (assuming orientation of line A to B means the line is going towards B)
+        public bool Left(Vector2 point)
+        {
+            // Find the determinate of the point and the line
+            // A = -(y2 - y1)
+            // B = x2 - x1
+            // C = -(A * x1 + B * y1)
+            // D = A * xp + B * yp + C
+            double A = -(p2.y - p1.y);
+            double B = p2.x - p1.x;
+            double C = -(A * p1.x + B * p1.y);
+            double D = A * point.x + B * point.y + C;
+
+            // if D > 0 then it's on the left
+            return D > 0;
+        }
     }
 }

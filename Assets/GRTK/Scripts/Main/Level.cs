@@ -32,7 +32,43 @@ namespace GRTK
                 }
             }
 
+            // Unify the graph and make sure any intersections have a vertex
+            graph.Unify();
 
+            
+
+            // Remove any verticies interior to another boundary
+            List<BoundaryGraphNode> deleteList = new List<BoundaryGraphNode>();
+            foreach (BoundaryGraphNode node in graph)
+            {
+                foreach (Boundary bound in boundaries)
+                {
+                    // Ignore its parent boundaries
+                    if (node.IsParent(bound))
+                        continue;
+                    // If position is interior, remove this node
+                    if (bound.Interior(node.position))
+                    {
+                        deleteList.Add(node);
+                        Debug.Log("Point " + node.position + " interior to " + bound.transform.position);                       
+                    }
+                }
+            }
+
+            Debug.Log(boundaries[1].Interior(new Vector2(-0.5f, 0.5f)));
+
+            // Cleanup deleted nodes
+            foreach (BoundaryGraphNode node in deleteList)
+                graph.DeleteNode(node);
+
+            //TEST VISUALIZATION
+            foreach (BoundaryGraphNode node in graph)
+            {
+                GameObject rep = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                rep.transform.position = node.position;
+                rep.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                //Debug.Log("Position: " + node.position + " | neighbors: " + node.GetNeighbors().Count + " | parents: " + node.GetParentBoundaries()[0].GetInstanceID());
+            }
         }
 
         #region Editor

@@ -9,7 +9,7 @@ namespace GRTK
     public class Boundary : MonoBehaviour
     {
 
-        // Return a list of points representing the 2D bounds from a top down view
+        // Return a list of points representing the 2D bounds from a top down view in clockwise order
         public List<Vector2> Get2DBounds()
         {
             // Get data about the boundary
@@ -55,33 +55,15 @@ namespace GRTK
         // Checks if a point is interior to this boundary
         public bool Interior(Vector2 point)
         {
-            // Do this by taking the scaler of vectors of vectors
-            // If rect is defined by points A,B,C,D and we test point M
-            // (0 < AM dot AB < AB dot AB) and (0 < AM dot AD < AD dot AD)
-            List<Vector2> corners = Get2DBounds();
-            Vector2 cornerA = corners[0];
-            Vector2 cornerB = corners[1];
-            Vector2 cornerD = corners[3];
-            Vector2 AM = point - cornerA;
-            Vector2 AB = cornerB - cornerA;
-            Vector2 AD = cornerD - cornerA;
-            double AMdotAB = Vector2.Dot(AM, AB);
-            double ABdotAB = Vector2.Dot(AB, AB);
-            double AMdotAD = Vector2.Dot(AM, AD);
-            double ADdotAD = Vector2.Dot(AD, AD);
+            List<Vector2> bounds = Get2DBounds();
+            // Check if point is interior to each of the 4 edges
+            Line2D l1 = new Line2D(bounds[1], bounds[0]);
+            Line2D l2 = new Line2D(bounds[2], bounds[1]);
+            Line2D l3 = new Line2D(bounds[3], bounds[2]);
+            Line2D l4 = new Line2D(bounds[0], bounds[3]);
 
-            bool pass = true;
-            // Now we run the pass bool through a series of tests. Failing one will trip a false.
-            if (AMdotAB <= 0)
-                pass = false;
-            if (AMdotAB >= ABdotAB)
-                pass = false;
-            if (AMdotAD <= 0)
-                pass = false;
-            if (AMdotAB >= ADdotAD)
-                pass = false;
-
-            return pass;
+            // All lines are build counter clockwise so we check if point is left of all of them
+            return l1.Left(point) && l2.Left(point) && l3.Left(point) && l4.Left(point);
         }
 
         #region Editor
