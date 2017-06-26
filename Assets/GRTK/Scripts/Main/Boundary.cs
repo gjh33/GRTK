@@ -14,14 +14,18 @@ namespace GRTK
         {
             // Get data about the boundary
             List<Vector2> toRet = new List<Vector2>();
-            Vector3 center = GetComponent<Renderer>().bounds.center;
-            Vector3 extents = GetComponent<Renderer>().bounds.extents;
 
-            //Find the 4 corners
-            toRet.Add(new Vector2(center.x + extents.x, center.y + extents.y));
-            toRet.Add(new Vector2(center.x + extents.x, center.y - extents.y));
-            toRet.Add(new Vector2(center.x - extents.x, center.y - extents.y));
-            toRet.Add(new Vector2(center.x - extents.x, center.y + extents.y));
+            // Use the local coordinates of a cube corner and transform into world
+            Vector3 tr = transform.TransformPoint(0.5f, 0.5f, 0);
+            Vector3 br = transform.TransformPoint(0.5f, -0.5f, 0);
+            Vector3 bl = transform.TransformPoint(-0.5f, -0.5f, 0);
+            Vector3 tl = transform.TransformPoint(-0.5f, 0.5f, 0);
+
+            // Add them as Vector2D
+            toRet.Add(new Vector2(tr.x, tr.y));
+            toRet.Add(new Vector2(br.x, br.y));
+            toRet.Add(new Vector2(bl.x, bl.y));
+            toRet.Add(new Vector2(tl.x, tl.y));
 
             return toRet;
         }
@@ -70,7 +74,7 @@ namespace GRTK
         [MenuItem("GameObject/GRTK/Boundary", false, 12)]
         public static void SpawnBoundaryObject(MenuCommand menuCommand)
         {
-            // Create a new GameObject with a Level attached
+            // Create a new GameObject with a Boundary attached
             GameObject newBoundary = GameObject.CreatePrimitive(PrimitiveType.Cube);
             newBoundary.name = "Boundary";
             newBoundary.AddComponent<Boundary>();
@@ -81,7 +85,7 @@ namespace GRTK
             // Register the creation in the undo system
             Undo.RegisterCreatedObjectUndo(newBoundary, "Create " + newBoundary.name);
 
-            // Set the selected object to be the level you just created
+            // Set the selected object to be the boundary you just created
             Selection.activeObject = newBoundary;
         }
         #endregion

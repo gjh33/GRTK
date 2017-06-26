@@ -36,6 +36,12 @@ namespace GRTK
             nodes.Remove(node);
         }
 
+        // Returns true if the graph has no nodes
+        public bool IsEmpty()
+        {
+            return nodes.Count == 0;
+        }
+
         // Checks existing graph for any intersections, then splits the edges that intersect
         // By a node with a parent to each boundary that caused the intersection
         public void Unify()
@@ -113,6 +119,60 @@ namespace GRTK
 
             // Convert to list and return
             return new List<UnorderedPair<BoundaryGraphNode, BoundaryGraphNode>>(edges);
+        }
+
+        // Returns an extrema node (min x and y)
+        public BoundaryGraphNode GetExtrema()
+        {
+            BoundaryGraphNode curMin = null;
+            foreach (BoundaryGraphNode node in nodes)
+            {
+                if (curMin == null)
+                    curMin = node;
+                else if (node.position.x < curMin.position.x)
+                    curMin = node;
+                else if (node.position.x == curMin.position.x && node.position.y < curMin.position.y)
+                    curMin = node;
+            }
+
+            return curMin;
+        }
+
+        // Given a root node, remove all nodes connected to it. Returns a list of removed nodes.
+        // If the component is a polygon, it will return the nodes in the correct order in
+        // relation to the neighbors.
+        // Searches connectivity via DFS
+        public List<BoundaryGraphNode> RemoveConnectedComponent(BoundaryGraphNode root)
+        {
+            // Initialize the dfs
+            List<BoundaryGraphNode> visited = new List<BoundaryGraphNode>();
+            Stack<BoundaryGraphNode> dfs = new Stack<BoundaryGraphNode>();
+            dfs.Push(root);
+            while (dfs.Count > 0)
+            {
+                // Pop the current node and mark as visited
+                BoundaryGraphNode current = dfs.Pop();
+                visited.Add(current);
+
+                // For each neighbor if it hasn't been visited, add it to the stack
+                foreach (BoundaryGraphNode neighbor in current.GetNeighbors())
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        dfs.Push(neighbor);
+                        // NOTE: If you need to add anything to the dfs when visiting a node
+                        // do it here
+                    }
+                }
+            }
+
+            // Remove them from the graph
+            foreach (BoundaryGraphNode node in visited)
+            {
+                DeleteNode(node);
+            }
+
+            return visited;
         }
 
         public IEnumerator<BoundaryGraphNode> GetEnumerator()
