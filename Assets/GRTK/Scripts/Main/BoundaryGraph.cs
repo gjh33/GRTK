@@ -76,7 +76,7 @@ namespace GRTK
                     if (line1.Intersect(line2, out intersection))
                     {
                         // Create intersection node and split edges
-                        BoundaryGraphNode intersectionNode = new BoundaryGraphNode(intersection, true);
+                        BoundaryGraphNode intersectionNode = new BoundaryGraphNode(intersection);
                         intersectionNode.AddParentBoundary(edge1.item1.GetParentBoundaries()[0]);
                         intersectionNode.AddParentBoundary(edge2.item1.GetParentBoundaries()[0]);
                         AddNode(intersectionNode);
@@ -184,22 +184,44 @@ namespace GRTK
         {
             return nodes.GetEnumerator();
         }
+
+        //DEBUG CODE
+        #region Debug
+        // Dumps a series of spheres and cylinders to visualize the graph structure
+        // Note you will have to manually clean these out when you're done
+        public void _Visualize()
+        {
+            //NOTE: There is a debug material you can use to help visualize in assets/materials
+            foreach (var node in this)
+            {
+                var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                go.transform.position = node.position;
+                go.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+                foreach (var neigh in node.GetNeighbors())
+                {
+                    var go2 = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    go2.transform.localScale = new Vector3(0.2f, (neigh.position - node.position).magnitude / 2, 0.2f);
+                    go2.transform.position = neigh.position + ((node.position - neigh.position) / 2);
+                    go2.transform.LookAt(new Vector3(neigh.position.x, neigh.position.y, 0));
+                    go2.transform.Rotate(new Vector3(-90f, 0, 0));
+                }
+            }
+        }
+        #endregion
     }
 
     public class BoundaryGraphNode
     {
         public Vector2 position { get; private set; }
-        bool intersectionNode;
 
         List<Boundary> parentBoundaries = new List<Boundary>();
-    
+
 
         private HashSet<BoundaryGraphNode> neighbors = new HashSet<BoundaryGraphNode>();
 
-        public BoundaryGraphNode(Vector2 position, bool intersectionNode)
+        public BoundaryGraphNode(Vector2 position)
         {
             this.position = position;
-            this.intersectionNode = intersectionNode;
         }
 
         // Add a neighbor to the node. Also adds the reciprical relation
@@ -245,6 +267,19 @@ namespace GRTK
         {
             return neighbors.Contains(other);
         }
-    }
 
+        //DEBUG CODE
+        #region Debug
+        public void _VisualizeNeighbors()
+        {
+            //NOTE: There is a debug material you can use to help visualize in assets/materials
+            foreach (var node in neighbors)
+            {
+                var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                go.transform.position = node.position;
+                go.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+            }
+        }
+        #endregion
+    }
 }

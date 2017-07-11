@@ -10,7 +10,7 @@ namespace GRTK
         private void OnSceneGUI()
         {
             LevelGeometry lg = target as LevelGeometry;
-            Handles.DrawAAPolyLine(3.0f, lg.Exterior.GetRaw3());
+            //Handles.DrawAAPolyLine(3.0f, lg.Exterior.GetRaw3());
         }
     }
 }

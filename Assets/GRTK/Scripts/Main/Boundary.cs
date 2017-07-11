@@ -39,7 +39,7 @@ namespace GRTK
             // Convert each point into a node
             for (i = 0; i < corners.Count; i++)
             {
-                BoundaryGraphNode node = new BoundaryGraphNode(corners[i], false);
+                BoundaryGraphNode node = new BoundaryGraphNode(corners[i]);
                 nodes.Add(node);
             }
             // Link each node to the next one (note linking is reciprical so I don't have to link the reverse)

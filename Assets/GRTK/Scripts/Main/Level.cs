@@ -29,7 +29,13 @@ namespace GRTK
             // Unify the graph and make sure any intersections have a vertex
             graph.Unify();
 
-            
+            foreach(var node in graph)
+            {
+                if (node.position.x >= -1.467 && node.position.x < -1.466 && node.position.y == -0.5)
+                {
+                    node._VisualizeNeighbors();
+                }
+            }
 
             // Remove any verticies interior to another boundary
             List<BoundaryGraphNode> deleteList = new List<BoundaryGraphNode>();
@@ -43,7 +49,8 @@ namespace GRTK
                     // If position is interior, remove this node
                     if (bound.Interior(node.position))
                     {
-                        deleteList.Add(node);                       
+                        deleteList.Add(node);
+                        break;
                     }
                 }
             }
@@ -94,8 +101,11 @@ namespace GRTK
             }
 
             // Use our data to create a geometry class and store our results
-            LevelGeometry lg = gameObject.AddComponent<LevelGeometry>();
+            LevelGeometry lg = gameObject.GetComponent<LevelGeometry>();
+            if (lg == null)
+                lg = Undo.AddComponent<LevelGeometry>(gameObject);
             lg.Exterior = outtermost;
+            return;
         }
 
         #region Editor
