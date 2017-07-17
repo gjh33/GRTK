@@ -88,6 +88,24 @@ namespace GRTK
                         intersectionNode.AddNeighbor(edge1.item2);
                         intersectionNode.AddNeighbor(edge2.item1);
                         intersectionNode.AddNeighbor(edge2.item2);
+                        // Now we need to update our edges list so future runs of the loop interact with the new edges not the old ones
+                        edges.Remove(edge1);
+                        edges.Remove(edge2);
+                        // Decrement outter loop because we are removing the current index
+                        i--;
+                        // Add in the new edges we just formed.
+                        edges.Add(new UnorderedPair<BoundaryGraphNode, BoundaryGraphNode>(edge1.item1, intersectionNode));
+                        edges.Add(new UnorderedPair<BoundaryGraphNode, BoundaryGraphNode>(edge1.item2, intersectionNode));
+                        edges.Add(new UnorderedPair<BoundaryGraphNode, BoundaryGraphNode>(edge2.item1, intersectionNode));
+                        edges.Add(new UnorderedPair<BoundaryGraphNode, BoundaryGraphNode>(edge2.item2, intersectionNode));
+
+                        /* Deeper explanation:
+                         * We are removing the edge at index i, meaning that i+1 will become i. In order to not skip over i+1,
+                         * we decrement i by 1 so when the loop restarts, new i = i + 1 = old i
+                         * then we must immediately break the current inner loop since we are no longer matching intersections
+                         * against edge i, since we just found one and removed that edge from the list
+                         */
+                        break;
                     }
                 }
             }

@@ -29,15 +29,8 @@ namespace GRTK
             // Unify the graph and make sure any intersections have a vertex
             graph.Unify();
 
-            foreach(var node in graph)
-            {
-                if (node.position.x >= -1.467 && node.position.x < -1.466 && node.position.y == -0.5)
-                {
-                    node._VisualizeNeighbors();
-                }
-            }
-
             // Remove any verticies interior to another boundary
+            // This does not account for exterior - exterior edges that cross the shape
             List<BoundaryGraphNode> deleteList = new List<BoundaryGraphNode>();
             foreach (BoundaryGraphNode node in graph)
             {
@@ -59,6 +52,8 @@ namespace GRTK
             foreach (BoundaryGraphNode node in deleteList)
                 graph.DeleteNode(node);
 
+            graph._Visualize();
+
             // Now use our graph to build a series of related polygons
             // The most exterior polygon (outter loop of verticies)
             Polygon outtermost = null;
@@ -72,6 +67,10 @@ namespace GRTK
             {
                 // Pick an extrema node. This will belong to the exterior most cycle in the graph
                 BoundaryGraphNode extrema = graph.GetExtrema();
+
+                // Clean up any exterior - exterior edges that could connect two seperate layers
+                // These are left over after deleting the interior nodes
+                // To do this, we track whether we are currently in an exterior
 
                 // Remove that node and all nodes connected. This will give you the loop.
                 List<BoundaryGraphNode> loop = graph.RemoveConnectedComponent(extrema);
