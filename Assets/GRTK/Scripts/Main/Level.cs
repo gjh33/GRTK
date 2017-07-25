@@ -52,6 +52,27 @@ namespace GRTK
             foreach (BoundaryGraphNode node in deleteList)
                 graph.DeleteNode(node);
 
+            // Now we will delete any edges who's midpoint is interior to another boundary
+            // These edges can remain when there's an exterior-exterior edge crossing polygons
+            // Consider a T shape made of 2 boundaries. Right at the cross section
+            foreach (UnorderedPair<BoundaryGraphNode, BoundaryGraphNode> edge in graph.getEdgesAsUniquePairs())
+            {
+                // Find the midpoint
+                Vector3 midpoint = new Vector3((edge.item1.position.x + edge.item2.position.x) / 2, (edge.item1.position.y + edge.item2.position.y) / 2, 0);
+                foreach (Boundary bound in boundaries)
+                {
+                    // Ignore its parent boundaries
+                    //if (edge.item1.IsParent(bound) || edge.item2.IsParent(bound))
+                        //continue;
+                    // If position is interior, remove this node
+                    if (bound.Interior(midpoint))
+                    {
+                        edge.item1.RemoveNeighbor(edge.item2); // Edge removal is reciprical
+                        break;
+                    }
+                }
+            }
+
             graph._Visualize();
 
             // Now use our graph to build a series of related polygons

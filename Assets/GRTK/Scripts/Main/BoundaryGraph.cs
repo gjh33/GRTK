@@ -298,6 +298,13 @@ namespace GRTK
                 go.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
             }
         }
+
+        public void _Visualize()
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            go.transform.position = position;
+            go.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+        }
         #endregion
     }
 }
