@@ -15,6 +15,12 @@ namespace GRTK
             // Get data about the boundary
             List<Vector2> toRet = new List<Vector2>();
 
+            // Negative scales can mess up the order of the function below
+            if (transform.localScale.x < 0 || transform.localScale.y < 0)
+            {
+                Debug.LogWarning(gameObject.name + ": Boundaries with negative scales can fail interior tests. See source for more detail!");
+            }
+
             // Use the local coordinates of a cube corner and transform into world
             Vector3 tr = transform.TransformPoint(0.5f, 0.5f, 0);
             Vector3 br = transform.TransformPoint(0.5f, -0.5f, 0);

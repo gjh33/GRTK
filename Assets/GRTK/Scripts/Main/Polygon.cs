@@ -7,7 +7,6 @@ namespace GRTK
     // Class to represent a closed polygon. This is serializable so we can
     // store it in a scriptable object (LevelGeometry) to save our
     // results from compiling geometry
-    [System.Serializable]
     public class Polygon
     {
         // Polygons have a parent child hierarchy

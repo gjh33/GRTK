@@ -37,8 +37,8 @@ namespace GRTK
                 foreach (Boundary bound in boundaries)
                 {
                     // Ignore its parent boundaries
-                    if (node.IsParent(bound))
-                        continue;
+                    //if (node.IsParent(bound))
+                        //continue;
                     // If position is interior, remove this node
                     if (bound.Interior(node.position))
                     {

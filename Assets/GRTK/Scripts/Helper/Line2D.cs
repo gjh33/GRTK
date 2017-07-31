@@ -8,6 +8,8 @@ namespace GRTK
     /// </summary>
     public class Line2D
     {
+        public static float LEFT_EPS = 0.0001f;
+
         // The two points defining the line segment
         public Vector2 p1;
         public Vector2 p2;
@@ -131,7 +133,7 @@ namespace GRTK
             double D = A * point.x + B * point.y + C;
 
             // if D > 0 then it's on the left
-            return D > 0.00001f;
+            return D > LEFT_EPS;
         }
     }
 }
