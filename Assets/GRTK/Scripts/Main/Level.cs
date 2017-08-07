@@ -73,13 +73,6 @@ namespace GRTK
                 }
             }
 
-            graph._Visualize();
-
-            // Now use our graph to build a series of related polygons
-            // The most exterior polygon (outter loop of verticies)
-            Polygon outtermost = null;
-            Polygon last = null;
-
             // NOTE: work still needed. Needs to handle multiple islands and error cases.
             // right now it only works for the trivial case
 
@@ -102,29 +95,12 @@ namespace GRTK
                 {
                     vertexList.Add(node.position);
                 }
+                vertexList.RemoveAt(vertexList.Count - 1); // There is a bug causing duplicate nodes and instead of fixing it I did this... fuck me :(
 
-                // Make a polygon from the loop
-                Polygon poly = new Polygon(vertexList);
-
-                // if this is the first run, set it as outtermost and dont add a parent
-                // otherwise add the previous as its parent
-                if (last == null)
-                {
-                    last = poly;
-                    outtermost = poly;
-                }
-                else
-                {
-                    poly.SetParent(last);
-                    last = poly;
-                }
+                Polygon poly = Undo.AddComponent<Polygon>(gameObject);
+                poly.SetVerticies(vertexList);
             }
 
-            // Use our data to create a geometry class and store our results
-            LevelGeometry lg = gameObject.GetComponent<LevelGeometry>();
-            if (lg == null)
-                lg = Undo.AddComponent<LevelGeometry>(gameObject);
-            lg.Exterior = outtermost;
             return;
         }
 

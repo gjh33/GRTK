@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace GRTK
 {
     [CustomEditor(typeof(Level))]
     public class LevelCustomEditor : Editor
     {
+        static bool BoundariesVisible = true;
+
         public override void OnInspectorGUI()
         {
             // INITIALIZATION
@@ -20,9 +23,20 @@ namespace GRTK
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
+            bool hideButtonResult = GUILayout.Button("Hide/Show Boundaries", GUILayout.Width(300), GUILayout.Height(20));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            bool resetButtonResult = GUILayout.Button("Reset", GUILayout.Width(300), GUILayout.Height(20));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
             bool buildButtonResult = GUILayout.Button("Build", GUILayout.Width(300), GUILayout.Height(30));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+            
 
             // HANDLE THE INPUT
             if (buildButtonResult)
@@ -41,6 +55,27 @@ namespace GRTK
 
                 // Register the creation in the undo system
                 Undo.RegisterCreatedObjectUndo(newBoundary, "Create " + newBoundary.name);
+            }
+            else if (resetButtonResult)
+            {
+                // Destroy all child polygons
+                foreach (Polygon poly in level.gameObject.GetComponents<Polygon>())
+                {
+                    DestroyImmediate(poly);
+                }
+                GUIUtility.ExitGUI();
+            }
+            else if (hideButtonResult)
+            {
+                // toggle visibility of all child boundaries
+                if (BoundariesVisible)
+                    BoundariesVisible = false;
+                else
+                    BoundariesVisible = true;
+                foreach (Transform child in level.transform)
+                {
+                    child.gameObject.SetActive(BoundariesVisible);
+                }
             }
         }
     }
